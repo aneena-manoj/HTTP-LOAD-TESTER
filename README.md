@@ -1,4 +1,4 @@
-Here's the updated README with preference given to the CLI version and instructions for both the CLI and Streamlit versions, along with the additional `--qps` flag explanation:
+Here's the updated README with the embedded video for the CLI demo of the Dockerized app:
 
 # HTTP Load Tester
 
@@ -152,12 +152,21 @@ HTTP-LOAD-TESTER/
 │   ├── custom_load_response_times_chart2.png
 │   └── performance_metrics_summary.png
 │
+├── Dockerfile
 ├── Dockerfile.cli
 ├── Dockerfile.streamlit
 ├── pyproject.toml
 ├── README.md
 └── run_cli.sh
 ```
+
+## CLI Demo Video
+
+Here is a demo of the CLI version of the Dockerized app:
+
+<div style="position: relative; padding-bottom: 57.45473908413206%; height: 0;">
+  <iframe src="https://www.loom.com/embed/f21d79f31de248daaa50cb101903a3f4?sid=cb98980d-cd6a-497b-9387-b089b8314115" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+</div>
 
 ## Conclusion
 
