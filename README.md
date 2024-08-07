@@ -1,5 +1,3 @@
-Here's the updated README with the correct method to embed the video:
-
 # HTTP Load Tester
 
 This project serves as a general-purpose HTTP load-testing and benchmarking library. It is designed to provide accurate results, reporting latencies, error rates, and other performance metrics. The project includes a FastAPI backend to manage the load testing and a Streamlit frontend for real-time visualization of the test results. WebSocket is used for real-time communication between the server and the client.
@@ -18,6 +16,7 @@ This project serves as a general-purpose HTTP load-testing and benchmarking libr
 
 - **`POST /start_test`**: Starts the load test with the given parameters.
 - **`POST /stop_test`**: Stops the currently running load test.
+
 ### CLI Version
 #### CLI Demo Video
 
