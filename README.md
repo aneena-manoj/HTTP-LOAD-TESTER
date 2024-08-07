@@ -1,4 +1,4 @@
-Here's the updated README with the embedded video for the CLI demo of the Dockerized app:
+Here's the updated README with the correct method to embed the video:
 
 # HTTP Load Tester
 
@@ -18,6 +18,21 @@ This project serves as a general-purpose HTTP load-testing and benchmarking libr
 
 - **`POST /start_test`**: Starts the load test with the given parameters.
 - **`POST /stop_test`**: Stops the currently running load test.
+### CLI Version
+#### CLI Demo Video
+
+[![Demo of HTTP Load Tester Dockerised CLI APP](https://cdn.loom.com/sessions/thumbnails/bc18d5653f8b4dd29e5c4e448e399355-1df3cbadac212a5e-full-play.gif)](https://www.loom.com/share/bc18d5653f8b4dd29e5c4e448e399355 "Demo of HTTP Load Tester Dockerised CLI APP")
+
+URL: https://www.loom.com/share/bc18d5653f8b4dd29e5c4e448e399355?sid=e455c733-cdc9-49c0-9389-34824785c3e1
+
+- **Parameters**:
+  - **`--url`**: URL to test
+  - **`--num_requests`**: Number of requests to send
+  - **`--concurrent_users`**: Number of concurrent users
+  - **`--qps`**: Queries per second
+  - **`--headers`**: Custom headers
+  - **`--payload`**: Custom payload
+  - **`--graph`**: Display graphs (True/False)
 
 ### Streamlit Frontend
 
@@ -32,16 +47,11 @@ This project serves as a general-purpose HTTP load-testing and benchmarking libr
 - **Charts and Metrics**: Real-time charts for response times, status code distribution, and performance metrics summary.
 - **Control Buttons**: Start and stop buttons to control the load test.
 
-### CLI Version
+#### Streamlit Demo Video
 
-- **Parameters**:
-  - **`--url`**: URL to test
-  - **`--num_requests`**: Number of requests to send
-  - **`--concurrent_users`**: Number of concurrent users
-  - **`--qps`**: Queries per second
-  - **`--headers`**: Custom headers
-  - **`--payload`**: Custom payload
-  - **`--graph`**: Display graphs (True/False)
+[![Demo of HTTP Load Tester Dockerised Streamlit APP](https://cdn.loom.com/sessions/thumbnails/a28d1b3fe3f34391be947ca55717b1ff-ecf24bad2c44f20b-full-play.gif)](https://www.loom.com/share/a28d1b3fe3f34391be947ca55717b1ff "Demo of HTTP Load Tester Dockerised Streamlit APP")
+
+URL: https://www.loom.com/share/a28d1b3fe3f34391be947ca55717b1ff?sid=7fdce536-d6d5-4e87-8284-f18f2c25fca2
 
 ## Why Use WebSocket?
 
@@ -152,7 +162,6 @@ HTTP-LOAD-TESTER/
 │   ├── custom_load_response_times_chart2.png
 │   └── performance_metrics_summary.png
 │
-├── Dockerfile
 ├── Dockerfile.cli
 ├── Dockerfile.streamlit
 ├── pyproject.toml
@@ -160,13 +169,7 @@ HTTP-LOAD-TESTER/
 └── run_cli.sh
 ```
 
-## CLI Demo Video
 
-Here is a demo of the CLI version of the Dockerized app:
-
-<div style="position: relative; padding-bottom: 57.45473908413206%; height: 0;">
-  <iframe src="https://www.loom.com/embed/f21d79f31de248daaa50cb101903a3f4?sid=cb98980d-cd6a-497b-9387-b089b8314115" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
-</div>
 
 ## Conclusion
 
