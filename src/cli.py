@@ -3,19 +3,19 @@ import asyncio
 import websockets
 import json
 import httpx
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
 import threading
 import time
 import queue
+from rich.console import Console
+from rich.table import Table
+from rich.progress import Progress, TaskID
 
 # Global variables
 results_queue = queue.Queue()
 test_running = threading.Event()
 total_requests_sent = 0
 
-async def receive_data(total_requests):
+async def receive_data(total_requests, progress, task: TaskID):
     global total_requests_sent
     while test_running.is_set():
         try:
@@ -25,7 +25,7 @@ async def receive_data(total_requests):
                     result = json.loads(message)
                     results_queue.put(result)
                     total_requests_sent += 1
-                    print(f"Total requests sent: {total_requests_sent}")
+                    progress.update(task, advance=1)
         except websockets.exceptions.ConnectionClosed:
             await asyncio.sleep(1)  # Wait before trying to reconnect
 
@@ -54,36 +54,24 @@ def parse_headers(headers_string):
             headers[key.strip()] = value.strip()
     return headers
 
-def display_results(results, show_graphs=True):
-    if show_graphs:
-        # Response Time Chart
-        fig_rt, ax_rt = plt.subplots(figsize=(10, 5))
-        response_times = [r['response_time'] for r in results]
-        ax_rt.plot(response_times)
-        ax_rt.set_title("Response Times")
-        ax_rt.set_xlabel("Request Number")
-        ax_rt.set_ylabel("Response Time (s)")
-        plt.show()
-        plt.close(fig_rt)
+def display_results(results):
+    console = Console()
 
-        # Status Code Chart
-        fig_sc, ax_sc = plt.subplots(figsize=(10, 5))
-        status_codes = [r.get('status_code', 0) for r in results]
-        ax_sc.hist(status_codes, bins=20)
-        ax_sc.set_title("Status Codes Distribution")
-        ax_sc.set_xlabel("Status Code")
-        ax_sc.set_ylabel("Frequency")
-        plt.show()
-        plt.close(fig_sc)
+    table = Table(show_header=True, header_style="bold magenta")
+    table.add_column("Request")
+    table.add_column("Status Code")
+    table.add_column("Response Time (s)")
+    table.add_column("Success")
 
-        # Response Time Distribution Chart
-        fig_rtd, ax_rtd = plt.subplots(figsize=(10, 5))
-        sns.histplot(response_times, kde=True, ax=ax_rtd)
-        ax_rtd.set_title("Response Time Distribution")
-        ax_rtd.set_xlabel("Response Time (s)")
-        ax_rtd.set_ylabel("Frequency")
-        plt.show()
-        plt.close(fig_rtd)
+    for idx, result in enumerate(results):
+        table.add_row(
+            str(idx + 1),
+            str(result.get("status_code", "N/A")),
+            f"{result.get('response_time', 0):.3f}",
+            "✔️" if result.get("success", False) else "❌"
+        )
+
+    console.print(table)
 
     # Performance Metrics Summary
     total_requests = len(results)
@@ -93,13 +81,13 @@ def display_results(results, show_graphs=True):
     max_response_time = max(r['response_time'] for r in results) if results else 0
     min_response_time = min(r['response_time'] for r in results) if results else 0
 
-    print("\n### Performance Metrics Summary ###")
-    print(f"Total Requests: {total_requests}")
-    print(f"Successful Requests: {successful_requests}")
-    print(f"Error Rate: {error_rate:.2%}")
-    print(f"Average Response Time: {avg_response_time:.3f} s")
-    print(f"Max Response Time: {max_response_time:.3f} s")
-    print(f"Min Response Time: {min_response_time:.3f} s")
+    console.print("\n### Performance Metrics Summary ###")
+    console.print(f"Total Requests: {total_requests}")
+    console.print(f"Successful Requests: {successful_requests}")
+    console.print(f"Error Rate: {error_rate:.2%}")
+    console.print(f"Average Response Time: {avg_response_time:.3f} s")
+    console.print(f"Max Response Time: {max_response_time:.3f} s")
+    console.print(f"Min Response Time: {min_response_time:.3f} s")
 
 def main():
     parser = argparse.ArgumentParser(description="Advanced Load Tester CLI")
@@ -120,24 +108,26 @@ def main():
     headers_string = args.headers
     headers = parse_headers(headers_string)
     payload = args.payload
-    # show_graphs = args.graph
+    show_graphs = args.graph
 
     test_running.set()
 
     # Start the WebSocket receiver in a separate thread
-    threading.Thread(target=lambda: asyncio.run(receive_data(num_requests)), daemon=True).start()
+    with Progress() as progress:
+        task = progress.add_task("Sending requests...", total=num_requests)
+        threading.Thread(target=lambda: asyncio.run(receive_data(num_requests, progress, task)), daemon=True).start()
 
-    # Call the FastAPI to start the load test
-    if asyncio.run(start_load_test(url, num_requests, concurrent_users, qps, headers, payload)):
-        print("Load test started successfully!")
-    else:
-        print("Failed to start load test")
-        test_running.clear()
-        return
+        # Call the FastAPI to start the load test
+        if asyncio.run(start_load_test(url, num_requests, concurrent_users, qps, headers, payload)):
+            print("Load test started successfully!")
+        else:
+            print("Failed to start load test")
+            test_running.clear()
+            return
 
-    # Monitor the number of requests sent
-    while total_requests_sent < num_requests:
-        time.sleep(1)
+        # Monitor the number of requests sent
+        while total_requests_sent < num_requests:
+            time.sleep(1)
 
     test_running.clear()
     if asyncio.run(stop_load_test()):

@@ -1,3 +1,4 @@
+Here's the updated README with preference given to the CLI version and instructions for both the CLI and Streamlit versions, along with the additional `--qps` flag explanation:
 
 # HTTP Load Tester
 
@@ -8,7 +9,7 @@ This project serves as a general-purpose HTTP load-testing and benchmarking libr
 - **Load Testing**: Supports sending multiple HTTP requests concurrently to a specified URL.
 - **Real-time Visualization**: Uses Streamlit to display real-time charts of response times, status codes, and performance metrics.
 - **WebSocket Communication**: Streams test results from the server to the client in real-time.
-- **Configurable Parameters**: Allows customization of the number of requests, concurrency, custom headers, and payloads.
+- **Configurable Parameters**: Allows customization of the number of requests, concurrency, custom headers, payloads, and queries per second (QPS).
 - **Docker Support**: The application is fully containerized using Docker for easy deployment.
 
 ## API Design
@@ -24,11 +25,23 @@ This project serves as a general-purpose HTTP load-testing and benchmarking libr
   - **Enter website URL**: e.g., `https://example.com`
   - **Number of requests**: e.g., `100`
   - **Concurrent users**: e.g., `10`
+  - **Queries per second (QPS)**: e.g., `10`
   - **Custom Headers**: Enter custom headers one per line, e.g., `Content-Type: application/json`
   - **Custom Payload**: Enter custom payload in JSON format
   - **Load Preset**: Select from `Light Load`, `Medium Load`, `Heavy Load`, or `Custom`
 - **Charts and Metrics**: Real-time charts for response times, status code distribution, and performance metrics summary.
 - **Control Buttons**: Start and stop buttons to control the load test.
+
+### CLI Version
+
+- **Parameters**:
+  - **`--url`**: URL to test
+  - **`--num_requests`**: Number of requests to send
+  - **`--concurrent_users`**: Number of concurrent users
+  - **`--qps`**: Queries per second
+  - **`--headers`**: Custom headers
+  - **`--payload`**: Custom payload
+  - **`--graph`**: Display graphs (True/False)
 
 ## Why Use WebSocket?
 
@@ -55,14 +68,36 @@ git clone https://github.com/aneena-manoj/HTTP-LOAD-TESTER.git
 cd HTTP-LOAD-TESTER
 ```
 
-### Build and Run the Docker Container
+### Build and Run the Docker Container for CLI Version
 
-```bash
-docker build -t load-tester .
-docker run -p 8501:8501 -p 8000:8000 -p 8765:8765 load-tester
-```
+1. **Build the Docker Image**:
+    ```sh
+    docker build -f Dockerfile.cli -t cli-image .
+    ```
 
-### Access the Application
+2. **Run the Docker Container**:
+    ```sh
+    docker run -it --name cli-container -p 8000:8000 -p 8765:8765 cli-image
+    ```
+
+3. **Run the CLI Command within the Container**:
+    ```sh
+    ./run_cli.sh --url https://example.com --num_requests 100 --concurrent_users 10 --qps 10 --graph
+    ```
+
+### Build and Run the Docker Container for Streamlit Version
+
+1. **Build the Docker Image**:
+    ```sh
+    docker build -f Dockerfile.streamlit -t streamlit-image .
+    ```
+
+2. **Run the Docker Container**:
+    ```sh
+    docker run -p 8501:8501 -p 8000:8000 -p 8765:8765 streamlit-image
+    ```
+
+### Access the Streamlit Application
 
 - **Streamlit Frontend**: Open your browser and go to `http://localhost:8501`
 - **FastAPI Backend**: The API is available at `http://localhost:8000`
@@ -83,14 +118,14 @@ Here are some screenshots of the application in action:
 
 ### Example Usage
 
-1. **Configure the Test**: Enter the URL, number of requests, concurrent users, custom headers, and payload in the Streamlit app.
-2. **Start the Test**: Click the "Start Load Test" button to begin the test.
-3. **Monitor the Results**: Watch the real-time charts and metrics update as the test runs.
-4. **Stop the Test**: Click the "Stop Test" button to end the test.
+1. **Configure the Test**: Enter the URL, number of requests, concurrent users, custom headers, and payload in the Streamlit app or CLI.
+2. **Start the Test**: Click the "Start Load Test" button in the Streamlit app or run the CLI command to begin the test.
+3. **Monitor the Results**: Watch the real-time charts and metrics update as the test runs in the Streamlit app.
+4. **Stop the Test**: Click the "Stop Test" button in the Streamlit app or the CLI script will stop automatically after reaching the total number of requests.
 
 ### Sample Output
 
-After running the load test, the sample output displayed in Streamlit is:
+After running the load test, the sample output displayed in Streamlit or CLI is:
 
 **Performance Metrics Summary**
 
@@ -117,12 +152,13 @@ HTTP-LOAD-TESTER/
 │   ├── custom_load_response_times_chart2.png
 │   └── performance_metrics_summary.png
 │
-├── Dockerfile
+├── Dockerfile.cli
+├── Dockerfile.streamlit
 ├── pyproject.toml
-└── README.md
+├── README.md
+└── run_cli.sh
 ```
 
 ## Conclusion
 
 This HTTP load tester provides a robust and flexible solution for benchmarking and performance testing of web applications. The combination of FastAPI, Streamlit, and WebSocket ensures real-time feedback and interactive testing, making it an invaluable tool for developers and QA engineers.
-
