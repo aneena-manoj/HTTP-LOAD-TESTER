@@ -22,7 +22,7 @@ This project serves as a general-purpose HTTP load-testing and benchmarking libr
 
 [![Demo of HTTP Load Tester Dockerised CLI APP](https://cdn.loom.com/sessions/thumbnails/bc18d5653f8b4dd29e5c4e448e399355-1df3cbadac212a5e-full-play.gif)](https://www.loom.com/share/bc18d5653f8b4dd29e5c4e448e399355 "Demo of HTTP Load Tester Dockerised CLI APP")
 
-URL: https://www.loom.com/share/bc18d5653f8b4dd29e5c4e448e399355?sid=e455c733-cdc9-49c0-9389-34824785c3e1
+
 
 - **Parameters**:
   - **`--url`**: URL to test
@@ -50,7 +50,7 @@ URL: https://www.loom.com/share/bc18d5653f8b4dd29e5c4e448e399355?sid=e455c733-cd
 
 [![Demo of HTTP Load Tester Dockerised Streamlit APP](https://cdn.loom.com/sessions/thumbnails/a28d1b3fe3f34391be947ca55717b1ff-ecf24bad2c44f20b-full-play.gif)](https://www.loom.com/share/a28d1b3fe3f34391be947ca55717b1ff "Demo of HTTP Load Tester Dockerised Streamlit APP")
 
-URL: https://www.loom.com/share/a28d1b3fe3f34391be947ca55717b1ff?sid=7fdce536-d6d5-4e87-8284-f18f2c25fca2
+
 
 ## Why Use WebSocket?
 
