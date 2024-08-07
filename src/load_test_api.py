@@ -49,6 +49,8 @@ class LoadTester:
         await self.stream_result(result)
 
     async def stream_result(self, result):
+        global results
+        results.append(result)
         async with websockets.connect(self.websocket_url) as websocket:
             await websocket.send(json.dumps(result))
 
