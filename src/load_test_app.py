@@ -26,12 +26,13 @@ async def receive_data():
         except websockets.exceptions.ConnectionClosed:
             await asyncio.sleep(1)  # Wait before trying to reconnect
 
-async def start_load_test(url, num_requests, concurrent_users, headers, payload):
+async def start_load_test(url, num_requests, concurrent_users, qps, headers, payload):
     async with httpx.AsyncClient() as client:
         response = await client.post("http://localhost:8000/start_test", json={
             'url': url,
             'num_requests': num_requests,
             'concurrent_users': concurrent_users,
+            'qps': qps,
             'headers': headers,
             'payload': payload
         })
@@ -58,6 +59,7 @@ def main():
     url = st.text_input("Enter website URL", "https://example.com")
     num_requests = st.number_input("Number of requests", min_value=1, value=100)
     concurrent_users = st.number_input("Concurrent users", min_value=1, value=10)
+    qps = st.number_input("Queries per second (QPS)", min_value=1, value=1)
     
     # Custom Headers
     headers_string = st.text_area("Custom Headers (one per line, e.g., 'Content-Type: application/json')")
@@ -68,14 +70,15 @@ def main():
     
     # Test Configuration Presets
     presets = {
-        "Light Load": {"num_requests": 50, "concurrent_users": 5},
-        "Medium Load": {"num_requests": 200, "concurrent_users": 20},
-        "Heavy Load": {"num_requests": 500, "concurrent_users": 50}
+        "Light Load": {"num_requests": 50, "concurrent_users": 5, "qps": 1},
+        "Medium Load": {"num_requests": 200, "concurrent_users": 20, "qps": 5},
+        "Heavy Load": {"num_requests": 500, "concurrent_users": 50, "qps": 10}
     }
     selected_preset = st.selectbox("Load Preset", ["Custom"] + list(presets.keys()))
     if selected_preset != "Custom":
         num_requests = presets[selected_preset]["num_requests"]
         concurrent_users = presets[selected_preset]["concurrent_users"]
+        qps = presets[selected_preset]["qps"]
 
     start_button = st.button("Start Load Test")
     stop_button = st.button("Stop Test")
@@ -94,7 +97,7 @@ def main():
         threading.Thread(target=lambda: asyncio.run(receive_data()), daemon=True).start()
 
         # Call the FastAPI to start the load test
-        if asyncio.run(start_load_test(url, num_requests, concurrent_users, headers, payload)):
+        if asyncio.run(start_load_test(url, num_requests, concurrent_users, qps, headers, payload)):
             st.success("Load test started!")
         else:
             st.error("Failed to start load test")

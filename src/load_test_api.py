@@ -16,6 +16,7 @@ class TestParams(BaseModel):
     url: str
     num_requests: int
     concurrent_users: int
+    qps: int
     headers: dict = {}
     payload: str = ""
 
@@ -48,17 +49,21 @@ class LoadTester:
         await self.stream_result(result)
 
     async def stream_result(self, result):
+        global results
+        results.append(result)
         async with websockets.connect(self.websocket_url) as websocket:
             await websocket.send(json.dumps(result))
 
-    async def run_test(self, method: str, url: str, num_requests: int, concurrent_users: int, headers: dict, payload: str):
+    async def run_test(self, method: str, url: str, num_requests: int, concurrent_users: int, qps: int, headers: dict, payload: str):
         global stop_test
         stop_test = False
         tasks = []
+        delay = 1 / qps
         for _ in range(num_requests):
             if stop_test:
                 break
             tasks.append(self.send_request(method, url, headers, payload))
+            await asyncio.sleep(delay / concurrent_users)
 
         for i in range(0, len(tasks), concurrent_users):
             if stop_test:
@@ -66,20 +71,21 @@ class LoadTester:
             batch = tasks[i:i+concurrent_users]
             await asyncio.gather(*batch)
 
-async def run_load_test(url: str, num_requests: int, concurrent_users: int, headers: dict, payload: str):
+async def run_load_test(url: str, num_requests: int, concurrent_users: int, qps: int, headers: dict, payload: str):
     tester = LoadTester("ws://localhost:8765")
     await tester.run_test(
         method='POST' if payload else 'GET',
         url=url,
         num_requests=num_requests,
         concurrent_users=concurrent_users,
+        qps=qps,
         headers=headers,
         payload=payload
     )
 
 @app.post("/start_test")
 async def start_test(params: TestParams, background_tasks: BackgroundTasks):
-    background_tasks.add_task(run_load_test, params.url, params.num_requests, params.concurrent_users, params.headers, params.payload)
+    background_tasks.add_task(run_load_test, params.url, params.num_requests, params.concurrent_users, params.qps, params.headers, params.payload)
     return {"message": "Load test started"}
 
 @app.post("/stop_test")
